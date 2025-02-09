@@ -1,0 +1,7 @@
+builders:
+    msgPackSerializableBuilder:
+      import: "package:msgpack_serializable/builder.dart"
+      builder_factories: ["msgPackSerializableBuilder"]
+      build_extensions: {".dart": [".g.msgpack.dart"]}
+      build_to: source
+      auto_apply: root_package
