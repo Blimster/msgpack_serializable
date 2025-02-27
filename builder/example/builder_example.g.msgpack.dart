@@ -3,7 +3,7 @@ import 'builder_example.dart' as _i1;
 import 'package:msgpack_dart/msgpack_dart.dart' as _i2;
 import 'package:msgpack_annotation/msgpack_annotation.dart' as _i3;
 
-/// Customer
+/// void toMsgPack(Serializer serializer) => $customerToMsgPack(this, serializer);
 void $customerToMsgPack(_i1.Customer customer, _i2.Serializer serializer) {
   serializer.encode(customer.id);
   serializer.encode(customer.name);
@@ -12,7 +12,7 @@ void $customerToMsgPack(_i1.Customer customer, _i2.Serializer serializer) {
   customer.bar.toMsgPack(serializer);
 }
 
-/// Customer
+/// factory Bar.fromMsgPack(Deserializer deserializer) => $CustomerFromMsgPack(deserializer);
 _i1.Customer $customerFromMsgPack(_i2.Deserializer deserializer) {
   return _i1.Customer(
     id: deserializer.decode(),
@@ -23,7 +23,7 @@ _i1.Customer $customerFromMsgPack(_i2.Deserializer deserializer) {
   );
 }
 
-/// Bar
+/// void toMsgPack(Serializer serializer) => $barToMsgPack(this, serializer);
 void $barToMsgPack(_i1.Bar bar, _i2.Serializer serializer) {
   serializer.encode(bar.bar);
   _i3.encodeList(serializer, bar.list, (serializer, item) => item.toMsgPack(serializer));
@@ -35,7 +35,7 @@ void $barToMsgPack(_i1.Bar bar, _i2.Serializer serializer) {
   );
 }
 
-/// Bar
+/// factory Bar.fromMsgPack(Deserializer deserializer) => $BarFromMsgPack(deserializer);
 _i1.Bar $barFromMsgPack(_i2.Deserializer deserializer) {
   return _i1.Bar(
     bar: deserializer.decode(),
@@ -48,10 +48,10 @@ _i1.Bar $barFromMsgPack(_i2.Deserializer deserializer) {
   );
 }
 
-/// FooBar
+/// void toMsgPack(Serializer serializer) => $fooBarToMsgPack(this, serializer);
 void $fooBarToMsgPack(_i1.FooBar fooBar, _i2.Serializer serializer) {}
 
-/// FooBar
+/// factory Bar.fromMsgPack(Deserializer deserializer) => $FooBarFromMsgPack(deserializer);
 _i1.FooBar $fooBarFromMsgPack(_i2.Deserializer deserializer) {
   return _i1.FooBar();
 }

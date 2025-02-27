@@ -49,7 +49,8 @@ class MsgPackSerializableBuilder extends Builder {
         for (final clazz in classes) {
           final fields = clazz.fields.map((e) => (name: e.name, type: e.type)).toList();
           builder.body.add(Method((builder) {
-            builder.docs.add('/// ${clazz.name}');
+            builder.docs.add(
+                '/// void toMsgPack(Serializer serializer) => \$${clazz.name.camelCase}ToMsgPack(this, serializer);');
             builder.returns = refer('void');
             builder.name = '\$${clazz.name.camelCase}ToMsgPack';
             builder.requiredParameters.add(Parameter((builder) {
@@ -65,7 +66,8 @@ class MsgPackSerializableBuilder extends Builder {
             ''');
           }));
           builder.body.add(Method((builder) {
-            builder.docs.add('/// ${clazz.name}');
+            builder.docs.add(
+                '/// factory Bar.fromMsgPack(Deserializer deserializer) => \$${clazz.name}FromMsgPack(deserializer);');
             builder.returns = refer(clazz.name, buildStep.inputId.pathSegments.last);
             builder.name = '\$${clazz.name.camelCase}FromMsgPack';
             builder.requiredParameters.add(Parameter((builder) {
@@ -171,7 +173,30 @@ class ComplexCodeGenerator extends CodeGenerator {
 
   @override
   bool supportsType(DartType type) {
-    if (type.element case ClassElement(methods: final methods)) {
+    var hasCtor = false;
+    var hasToMsgPack = false;
+    var hasFromMsgPack = false;
+
+    if (type.element case ClassElement(fields: final fields, constructors: final ctors, methods: final methods)) {
+      for (final ctor in ctors) {
+        if (ctor
+            case ConstructorElement(
+              name: 'fromMsgPack',
+              parameters: [
+                ParameterElement(
+                  type: DartType(
+                    element: ClassElement(
+                      name: 'Deserializer',
+                      library: LibraryElement(name: 'msgpack_dart'),
+                    )
+                  )
+                )
+              ]
+            )) {
+          hasFromMsgPack = true;
+        }
+      }
+      hasCtor = ctorName(ctors, fields) != null;
       for (final method in methods) {
         if (method
             case MethodElement(
@@ -188,11 +213,12 @@ class ComplexCodeGenerator extends CodeGenerator {
                 )
               ],
             )) {
-          return true;
+          hasToMsgPack = true;
         }
       }
     }
-    return false;
+
+    return hasCtor && hasToMsgPack && hasFromMsgPack;
   }
 
   @override
@@ -202,6 +228,18 @@ class ComplexCodeGenerator extends CodeGenerator {
 
   String fromMsgPack(String Function(Reference) allocate, String package, DartType type) {
     return '${allocate(refer(type.getDisplayString(), package))}.fromMsgPack(deserializer)';
+  }
+
+  String? ctorName(List<ConstructorElement> ctors, List<FieldElement> fields) {
+    for (final ctor in ctors) {
+      if (ctor case ConstructorElement(name: '', parameters: final params)) {
+        if (params.every((param) =>
+            param.isNamed && param is FieldFormalParameterElement && fields.any((field) => field.name == param.name))) {
+          return ctor.name;
+        }
+      }
+    }
+    return null;
   }
 }
 
