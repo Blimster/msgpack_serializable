@@ -67,7 +67,7 @@ class MsgPackSerializableBuilder extends Builder {
           }));
           builder.body.add(Method((builder) {
             builder.docs.add(
-                '/// factory Bar.fromMsgPack(Deserializer deserializer) => \$${clazz.name}FromMsgPack(deserializer);');
+                '/// factory ${clazz.name}.fromMsgPack(Deserializer deserializer) => \$${clazz.name.camelCase}FromMsgPack(deserializer);');
             builder.returns = refer(clazz.name, buildStep.inputId.pathSegments.last);
             builder.name = '\$${clazz.name.camelCase}FromMsgPack';
             builder.requiredParameters.add(Parameter((builder) {

@@ -1,57 +1,48 @@
-import 'dart:typed_data';
-
 import 'package:msgpack_annotation/msgpack_annotation.dart';
 
 import 'builder_example.g.msgpack.dart';
 
-enum Foo {
-  foo,
-  bar;
-}
-
 @MsgPackSerializable()
 class Customer {
-  final int id;
+  final CustomerId id;
   final String name;
-  final Uint8List data;
-  final Foo foo;
-  final Bar bar;
 
-  Customer({required this.id, required this.name, required this.data, required this.foo, required this.bar});
+  Customer({required this.id, required this.name});
+
+  factory Customer.fromMsgPack(Deserializer deserializer) => $customerFromMsgPack(deserializer);
 
   void toMsgPack(Serializer serializer) => $customerToMsgPack(this, serializer);
+
+  @override
+  String toString() => 'Customer(id: $id, name: $name)';
 }
 
 @MsgPackSerializable()
-class Bar {
-  final String bar;
-  final List<FooBar> list;
-  final Map<String, FooBar> map;
+class CustomerId {
+  final String id;
 
-  Bar({required this.bar, required this.list, required this.map});
+  CustomerId({required this.id});
 
-  factory Bar.fromMsgPack(Deserializer deserializer) => $barFromMsgPack(deserializer);
+  factory CustomerId.fromMsgPack(Deserializer deserializer) => $customerIdFromMsgPack(deserializer);
 
-  void toMsgPack(Serializer serializer) => $barToMsgPack(this, serializer);
-}
+  void toMsgPack(Serializer serializer) => $customerIdToMsgPack(this, serializer);
 
-@MsgPackSerializable()
-class FooBar {
-  FooBar();
-  factory FooBar.fromMsgPack(Deserializer deserializer) => $fooBarFromMsgPack(deserializer);
-  void toMsgPack(Serializer serializer) {}
+  @override
+  String toString() => 'CustomerId(id: $id)';
 }
 
 void main() {
   final customer = Customer(
-    id: 1,
-    name: 'name',
-    data: Uint8List.fromList([1, 2, 3]),
-    foo: Foo.bar,
-    bar: Bar(bar: 'bar', list: [FooBar()], map: {}),
+    id: CustomerId(id: '1910'),
+    name: 'FC St. Pauli',
   );
+
   final serializer = Serializer();
   customer.toMsgPack(serializer);
   final bytes = serializer.takeBytes();
-  print(bytes);
+
+  final deserializer = Deserializer(bytes);
+  final newCustomer = Customer.fromMsgPack(deserializer);
+
+  print(newCustomer);
 }
