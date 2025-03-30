@@ -2,15 +2,7 @@
 
 ## Overview
 
-This project provides an implementation for serializing and deserializing objects using MessagePack.
-
-## Installation
-
-To install the project, run the following command:
-
-```bash
-dart pub get
-```
+This project provides an implementation for serializing and deserializing objects using [MessagePack](https://msgpack.org).
 
 ## Build
 
